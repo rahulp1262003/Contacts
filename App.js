@@ -1,10 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import LoginScreen from './screens/LoginScreen';
+import AddContact from './screens/AddContact';
+// import LoginScreen from './screens/LoginScreen';
 
 export default function App() {
   return (
     <>
-      <LoginScreen />
+      {/* <LoginScreen /> */}
+      <AddContact />
       <StatusBar style="auto" />
     </>
   );

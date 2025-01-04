@@ -1,32 +1,34 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native"
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
 import { colors } from "../constants/GlobalStyles";
 
 function LoginScreen() {
     return (
         <View style={styles.rootContainer}>
-            <View>
-                <Text style={styles.title}>Contacts</Text>
-            </View>
-            <View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput style={styles.inputText} placeholder="Email" />
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                <View>
+                    <Text style={styles.title}>Contacts</Text>
                 </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Password</Text>
-                    <TextInput style={styles.inputText} placeholder="Password" />
+                <View style={{ width: '80%' }}>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Email</Text>
+                        <TextInput style={styles.inputText} placeholder="Email" />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Password</Text>
+                        <TextInput style={styles.inputText} placeholder="Password" secureTextEntry={true} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <Pressable
+                            style={styles.button}
+                            android_ripple={{ color: colors.Ripple }}
+                        >
+                            <View style={{ width: '100%' }}>
+                                <Text style={styles.buttonText}>Login</Text>
+                            </View>
+                        </Pressable>
+                    </View>
                 </View>
-                <View style={styles.buttonContainer}>
-                    <Pressable
-                        style={styles.button}
-                        android_ripple={{ color: colors.Ripple }}
-                    >
-                        <View style={{width: '100%'}}>
-                            <Text style={styles.buttonText}>Login</Text>
-                        </View>
-                    </Pressable>
-                </View>
-            </View>
+            </ScrollView>
         </View>
     )
 }
@@ -36,10 +38,17 @@ export default LoginScreen
 const styles = StyleSheet.create({
     rootContainer: {
         flex: 1,
-        justifyContent: 'space-evenly',
+        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: colors.White,
+        // backgroundColor: 'red',
 
+    },
+    scrollView: {
+        width: '100%',
+        flexGrow: 1, 
+        justifyContent: "space-evenly",
+        alignItems: "center",
     },
     title: {
         fontSize: 40,
@@ -63,7 +72,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.lightGray
     },
-    buttonContainer:{
+    buttonContainer: {
         overflow: 'hidden',
         borderRadius: 18,
         minWidth: '80%',
