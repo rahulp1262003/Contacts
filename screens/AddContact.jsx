@@ -1,6 +1,58 @@
-import { ScrollView, StyleSheet, Text, TextInput, View, Pressable } from 'react-native'
+import { ScrollView, StyleSheet, Text, TextInput, View, Pressable, Alert } from 'react-native'
+import { useState } from 'react';
+import { firebase } from '../config.js';
+
 import { colors } from "../constants/GlobalStyles";
+
 function AddContact() {
+
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: ''
+    });
+
+    const handleInputChange = (field, value) => {
+        setFormData((prev) => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const AddData = () => {
+
+        const { firstName, lastName, email, phone } = formData;
+
+        if (!firstName || !lastName || !email || !phone) {
+            Alert.alert("Error", "All fields are required.");
+            return;
+        }
+
+        const reference = firebase.database().ref('/contacts');
+
+        const newContact = {
+            firstName,
+            lastName,
+            email,
+            phone,
+        };
+
+        console.log('Attempting to push data:', newContact);
+
+        reference
+            .push(newContact)
+            .then(() => {
+                console.log('Data pushed successfully');
+                Alert.alert("Success", "Contact added successfully!");
+                setFormData({ firstName: '', lastName: '', email: '', phone: '' });
+            })
+            .catch((error) => {
+                console.error('Error pushing data:', error.message);
+                Alert.alert("Error", "Failed to add contact: " + error.message);
+            });
+    }
+
     return (
         <ScrollView contentContainerStyle={styles.scrollView}>
             <View style={styles.rootContainer}>
@@ -10,23 +62,52 @@ function AddContact() {
                 <View>
                     <View style={styles.form}>
                         <Text style={styles.label}>First Name</Text>
-                        <TextInput style={styles.inputText} placeholder='First Name' selectionColor={colors.Black} />
+                        <TextInput
+                            style={styles.inputText}
+                            placeholder='First Name'
+                            selectionColor={colors.Black}
+                            value={formData.firstName}
+                            onChangeText={(text) => handleInputChange('firstName', text)}
+                        />
                     </View>
                     <View style={styles.form}>
                         <Text style={styles.label}>Last Name</Text>
-                        <TextInput style={styles.inputText} placeholder='Last Name' selectionColor={colors.Black} />
+                        <TextInput
+                            style={styles.inputText}
+                            placeholder='Last Name'
+                            selectionColor={colors.Black}
+                            inputMode='email'
+                            textContentType='emailAddress'
+                            value={formData.lastName}
+                            onChangeText={(text) => handleInputChange('lastName', text)}
+                        />
                     </View>
                     <View style={styles.form}>
                         <Text style={styles.label}>Email</Text>
-                        <TextInput style={styles.inputText} placeholder='Email' selectionColor={colors.Black} />
+                        <TextInput
+                            style={styles.inputText}
+                            placeholder='Email'
+                            selectionColor={colors.Black} keyboardType='email-address'
+                            value={formData.email}
+                            onChangeText={(text) => handleInputChange('email', text)}
+                        />
                     </View>
                     <View style={styles.form}>
                         <Text style={styles.label}>Phone</Text>
-                        <TextInput style={styles.inputText} placeholder='Phone' maxLength={10} keyboardType='phone-pad' selectionColor={colors.Black} />
+                        <TextInput
+                            style={styles.inputText}
+                            placeholder='Phone'
+                            maxLength={10}
+                            keyboardType='numeric'
+                            selectionColor={colors.Black}
+                            value={formData.phone}
+                            onChangeText={(text) => handleInputChange('phone', text)}
+                        />
                     </View>
                     <View style={styles.buttonContainer}>
                         <Pressable
                             android_ripple={{ color: colors.Ripple }}
+                            onPress={AddData}
                         >
                             <View style={{ width: '100%' }}>
                                 <Text style={styles.buttonText}>Add</Text>
@@ -57,7 +138,7 @@ const styles = StyleSheet.create({
     form: {
         width: '80%',
     },
-    titleContainer:{
+    titleContainer: {
         marginBottom: 50
     },
     title: {
