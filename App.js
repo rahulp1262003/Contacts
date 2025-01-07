@@ -18,8 +18,6 @@ function BottomTabs() {
     },
     tabBarStyle:{
       height: 60,
-      position: 'relative',
-      top: 4,
     },
   }}>
     <Tab.Screen

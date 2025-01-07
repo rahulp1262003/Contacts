@@ -6,7 +6,7 @@ const firebaseConfig = {
     authDomain: "contacts-ceff2.firebaseapp.com",
     databaseURL: "https://contacts-ceff2-default-rtdb.firebaseio.com",
     projectId: "contacts-ceff2",
-    storageBucket: "contacts-ceff2.appspot.com",
+    storageBucket: "contacts-ceff2.firebasestorage.app",
     messagingSenderId: "1004923932179",
     appId: "1:1004923932179:web:553211c40016a65b03f9e6"
 };

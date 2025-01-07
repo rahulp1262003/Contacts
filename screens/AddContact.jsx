@@ -38,12 +38,10 @@ function AddContact() {
             phone,
         };
 
-        console.log('Attempting to push data:', newContact);
-
         reference
             .push(newContact)
             .then(() => {
-                console.log('Data pushed successfully');
+                
                 Alert.alert("Success", "Contact added successfully!");
                 setFormData({ firstName: '', lastName: '', email: '', phone: '' });
             })
