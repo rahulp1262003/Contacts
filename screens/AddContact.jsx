@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { firebase } from '../config.js';
 import { colors } from "../constants/GlobalStyles";
 
-function AddContact() {
+function AddContact({navigation}) {
 
     const validationSchema = Yup.object().shape({
         firstName: Yup.string()
@@ -39,9 +39,9 @@ function AddContact() {
         reference
             .push(newContact)
             .then(() => {
-
                 Alert.alert("Success", "Contact added successfully!");
                 resetForm();
+                navigation.navigate('Contacts')
             })
             .catch((error) => {
                 console.error('Error pushing data:', error.message);
@@ -83,7 +83,7 @@ function AddContact() {
                             <View style={styles.form}>
                                 <Text style={styles.label}>Last Name</Text>
                                 <TextInput
-                                    style={[styles.inputText, touched.lastName && errors.lastName && styles.invalidInput,]}
+                                    style={[styles.inputText, touched.lastName && errors.lastName && styles.invalidInput]}
                                     placeholder='Last Name'
                                     selectionColor={colors.Black}
                                     inputMode='text'
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         paddingVertical: 80
     },
     form: {
-        width: '80%',
+        width: '90%',
     },
     titleContainer: {
         marginBottom: 50
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         overflow: 'hidden',
         borderRadius: 18,
-        maxWidth: '80%',
+        maxWidth: '90%',
         marginTop: 20,
         backgroundColor: colors.Black,
     },

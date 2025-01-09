@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from "react-native"
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { firebase } from '../config';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants/GlobalStyles";
 
-function ContactList() {
+function ContactList({ navigation }) {
 
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,20 +29,24 @@ function ContactList() {
   }, []);
 
   const renderedItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.name}>{item.firstName} {item.lastName}</Text>
-      <Text style={styles.details}>{item.phone}</Text>
-    </View>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('EditContact', { contact: item })}
+    >
+      <View style={styles.card}>
+        <Text style={styles.name}>{item.firstName} {item.lastName}</Text>
+        <Text style={styles.details}>{item.phone}</Text>
+      </View>
+    </TouchableOpacity>
   )
 
 
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.rootContainer}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Contacts</Text>
         </View>
-        <View style={styles.listItemContainer}>
+        <View style={[styles.listItemContainer, contacts.length > 0 ? '' : styles.listCenter]}>
           {loading
             ?
             (<ActivityIndicator size='large' color={colors.Black} />)
@@ -51,7 +55,7 @@ function ContactList() {
               (
                 <FlatList data={contacts} renderItem={renderedItem} keyExtractor={(item) => item.id} />
               )
-              : (<Text>No Contacts Found</Text>)
+              : (<Text style={{ textAlign: 'center' }}>No Contacts Found</Text>)
           }
         </View>
       </View>
@@ -90,6 +94,8 @@ const styles = StyleSheet.create({
   listItemContainer: {
     flex: 1,
     width: '100%'
-    // backgroundColor: 'red'
   },
+  listCenter: {
+    justifyContent: 'center'
+  }
 });
