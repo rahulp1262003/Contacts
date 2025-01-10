@@ -49,7 +49,7 @@ export default function App() {
       {/* <LoginScreen /> */}
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name='Contacts' component={BottomTabs} options={{ headerShown: false }} />
+          <Stack.Screen name='BottomTabs' component={BottomTabs} options={{ headerShown: false }} />
           <Stack.Screen name='EditContact' component={EditContact} />
         </Stack.Navigator>
       </NavigationContainer>
