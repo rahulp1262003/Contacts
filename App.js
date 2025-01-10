@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Octicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
@@ -28,7 +28,7 @@ function BottomTabs() {
       name="Add Contact"
       component={AddContact}
       options={{
-        tabBarIcon: ({ color }) => <Icon name='home' size={25} color={color} />,
+        tabBarIcon: ({ color }) => <Icon name='person-add-alt-1' size={25} color={color} />,
       }}
     />
     <Tab.Screen

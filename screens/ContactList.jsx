@@ -18,6 +18,7 @@ function ContactList({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     const reference = firebase.database().ref('/contacts');
@@ -42,6 +43,7 @@ function ContactList({ navigation }) {
     setEditMode(!editMode);
     if (!editMode) {
       setSelectedItems([]); // Clear selected items when exiting edit mode
+      setSelectAll(false); // Reset "Select All" state
     }
   };
 
@@ -76,10 +78,23 @@ function ContactList({ navigation }) {
             });
             setEditMode(false);
             setSelectedItems([]);
+            setSelectAll(false);
           },
         },
       ]
     );
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      // Deselect all items
+      setSelectedItems([]);
+    } else {
+      // Select all items
+      const allIds = contacts.map((contact) => contact.id);
+      setSelectedItems(allIds);
+    }
+    setSelectAll(!selectAll); // Toggle "Select All" state
   };
 
   const CircleCheckbox = ({ selected, onPress }) => (
@@ -125,6 +140,7 @@ function ContactList({ navigation }) {
     if (editMode) {
       setEditMode(false);
       setSelectedItems([]);
+      setSelectAll(false);
     }
   };
 
@@ -135,9 +151,16 @@ function ContactList({ navigation }) {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Contacts</Text>
             {editMode && (
-              <TouchableOpacity onPress={deleteSelectedItems} >
-                <Text style={styles.deleteButton}>Delete</Text>
-              </TouchableOpacity>
+              <View style={styles.editModeButtons}>
+                <TouchableOpacity onPress={handleSelectAll}>
+                  <Text style={styles.selectAllButton}>
+                    {selectAll ? "Deselect All" : "Select All"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={deleteSelectedItems}>
+                  <Text style={styles.deleteButton}>Delete</Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
           <View style={[styles.listItemContainer, contacts.length > 0 ? '' : styles.listCenter]}>
@@ -172,9 +195,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '90%',
+    // backgroundColor: '#dddddd'
   },
   title: {
     fontSize: 40,
+    textAlign: 'center'
   },
   name: {
     fontSize: 18,
@@ -203,9 +228,21 @@ const styles = StyleSheet.create({
   listCenter: {
     justifyContent: 'center',
   },
+  editModeButtons: {
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 15, // Space between buttons
+    // backgroundColor: '#ddddfe'
+  },
   deleteButton: {
-    color: 'red',
-    fontSize: 18,
+    color: colors.Red,
+    fontSize: 15,
+  },
+  selectAllButton: {
+    color: colors.lightBlue,
+    fontSize: 15,
   },
   circleCheckbox: {
     width: 24,
@@ -217,12 +254,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   circleCheckboxSelected: {
-    borderColor: colors.Black,
+    borderColor: colors.lightBlue,
   },
   circleCheckboxInner: {
     width: 16,
     height: 16,
     borderRadius: 10, // Inner circle
-    backgroundColor: colors.Black,
+    backgroundColor: colors.lightBlue,
   },
 });
