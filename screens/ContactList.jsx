@@ -12,6 +12,7 @@ import {
 import { firebase } from '../config';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants/GlobalStyles";
+import firebaseUrl from "../components/firebase/firebase";
 
 function ContactList({ navigation }) {
   const [contacts, setContacts] = useState([]);
@@ -21,7 +22,9 @@ function ContactList({ navigation }) {
   const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
-    const reference = firebase.database().ref('/contacts');
+    // const reference = firebase.database().ref('/contacts');
+    const reference = firebaseUrl('/contacts');
+
     const onValueChange = reference.on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -119,7 +122,7 @@ function ContactList({ navigation }) {
         }
       }}
       onLongPress={toggleEditMode}
-      delayLongPress={500} // Adjust delay as needed
+      delayLongPress={500}
     >
       <View style={styles.card}>
         {editMode && (

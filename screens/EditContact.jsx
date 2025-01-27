@@ -56,7 +56,7 @@ function EditContact({ route, navigation }) {
           onSubmit={updateContact}
         >
           {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-            <View>
+            <View style={styles.formik}>
               {/* Form fields for editing contact */}
               <View style={styles.form}>
                 <Text style={styles.label}>First Name</Text>
@@ -141,15 +141,23 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    // backgroundColor: 'blue'
   },
   rootContainer: {
-    flex: 1,
+    // flex: 1,
+    width: '90%',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingVertical: 80
+    paddingVertical: 80,
+    // backgroundColor: 'red'
   },
   form: {
-    width: '90%',
+    width: '100%',
+  },
+  formik: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   titleContainer: {
     marginBottom: 50
@@ -168,13 +176,13 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGray,
     fontSize: 17,
     borderRadius: 15,
-    overflow: 'hidden'
+    // overflow: 'hidden'
   },
 
   buttonContainer: {
+    width: '100%',
     overflow: 'hidden',
     borderRadius: 18,
-    maxWidth: '90%',
     marginTop: 20,
     backgroundColor: colors.Black,
   },
