@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
+  SectionList,
   StyleSheet,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Dimensions,
 } from "react-native";
 import { firebase } from '../config';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,9 +21,9 @@ function ContactList({ navigation }) {
   const [editMode, setEditMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const sectionListRef = useRef(null);
 
   useEffect(() => {
-    // const reference = firebase.database().ref('/contacts');
     const reference = firebaseUrl('/contacts');
 
     const onValueChange = reference.on('value', (snapshot) => {
@@ -42,11 +43,42 @@ function ContactList({ navigation }) {
     return () => reference.off('value', onValueChange);
   }, []);
 
+  // Group contacts by the first letter of their firstName
+  const groupContactsByLetter = () => {
+    const grouped = {};
+    contacts.forEach((contact) => {
+      const firstLetter = contact.firstName[0].toUpperCase();
+      if (!grouped[firstLetter]) {
+        grouped[firstLetter] = [];
+      }
+      grouped[firstLetter].push(contact);
+    });
+
+    // Convert to SectionList format
+    return Object.keys(grouped)
+      .sort()
+      .map((letter) => ({
+        title: letter,
+        data: grouped[letter],
+      }));
+  };
+
+  const sections = groupContactsByLetter();
+
+  const scrollToSection = (sectionIndex) => {
+    sectionListRef.current.scrollToLocation({
+      sectionIndex,
+      itemIndex: 0,
+      animated: true,
+      viewOffset: 0,
+    });
+  };
+
   const toggleEditMode = () => {
     setEditMode(!editMode);
     if (!editMode) {
-      setSelectedItems([]); // Clear selected items when exiting edit mode
-      setSelectAll(false); // Reset "Select All" state
+      setSelectedItems([]);
+      setSelectAll(false);
     }
   };
 
@@ -90,14 +122,12 @@ function ContactList({ navigation }) {
 
   const handleSelectAll = () => {
     if (selectAll) {
-      // Deselect all items
       setSelectedItems([]);
     } else {
-      // Select all items
       const allIds = contacts.map((contact) => contact.id);
       setSelectedItems(allIds);
     }
-    setSelectAll(!selectAll); // Toggle "Select All" state
+    setSelectAll(!selectAll);
   };
 
   const CircleCheckbox = ({ selected, onPress }) => (
@@ -112,13 +142,13 @@ function ContactList({ navigation }) {
     </TouchableOpacity>
   );
 
-  const renderedItem = ({ item }) => (
+  const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
         if (editMode) {
           toggleSelectItem(item.id);
         } else {
-          navigation.navigate('EditContact', { contact: item });
+          navigation.navigate('ContactDetails', { contact: item });
         }
       }}
       onLongPress={toggleEditMode}
@@ -139,6 +169,34 @@ function ContactList({ navigation }) {
     </TouchableOpacity>
   );
 
+  const renderSectionHeader = ({ section: { title } }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>{title}</Text>
+    </View>
+  );
+
+  const AlphabetScrollbar = () => {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+    return (
+      <View style={styles.scrollbar}>
+        {alphabet.map((letter) => (
+          <TouchableOpacity
+            key={letter}
+            onPress={() => {
+              const sectionIndex = sections.findIndex((section) => section.title === letter);
+              if (sectionIndex !== -1) {
+                scrollToSection(sectionIndex);
+              }
+            }}
+          >
+            <Text style={styles.scrollbarText}>{letter}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
+
   const handleTapOutside = () => {
     if (editMode) {
       setEditMode(false);
@@ -152,7 +210,6 @@ function ContactList({ navigation }) {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.rootContainer}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Contacts</Text>
             {editMode && (
               <View style={styles.editModeButtons}>
                 <TouchableOpacity onPress={handleSelectAll}>
@@ -167,16 +224,22 @@ function ContactList({ navigation }) {
             )}
           </View>
           <View style={[styles.listItemContainer, contacts.length > 0 ? '' : styles.listCenter]}>
-            {loading
-              ?
-              (<ActivityIndicator size='large' color={colors.Black} />)
-              : contacts.length > 0
-                ?
-                (
-                  <FlatList data={contacts} renderItem={renderedItem} keyExtractor={(item) => item.id} />
-                )
-                : (<Text style={{ textAlign: 'center' }}>No Contacts Found</Text>)
-            }
+            {loading ? (
+              <ActivityIndicator size='large' color={colors.Black} />
+            ) : contacts.length > 0 ? (
+              <>
+                <SectionList
+                  ref={sectionListRef}
+                  sections={sections}
+                  renderItem={renderItem}
+                  renderSectionHeader={renderSectionHeader}
+                  keyExtractor={(item) => item.id}
+                />
+                <AlphabetScrollbar />
+              </>
+            ) : (
+              <Text style={{ textAlign: 'center' }}>No Contacts Found</Text>
+            )}
           </View>
         </View>
       </SafeAreaView>
@@ -192,17 +255,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },
-  titleContainer: {
-    marginVertical: 40,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '90%',
-    // backgroundColor: '#dddddd'
-  },
+  // titleContainer: {
+  //   marginVertical: 40,
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   alignItems: 'center',
+  //   width: '90%',
+  // },
   title: {
     fontSize: 40,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   name: {
     fontSize: 18,
@@ -213,9 +275,9 @@ const styles = StyleSheet.create({
   },
   card: {
     padding: 20,
-    marginVertical: 5,
-    marginHorizontal: 10,
-    borderRadius: 18,
+    marginVertical: 1,
+    // marginHorizontal: 10,
+    // borderRadius: 18,
     backgroundColor: colors.White,
     flexDirection: 'row',
     alignItems: 'center',
@@ -236,8 +298,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 15, // Space between buttons
-    // backgroundColor: '#ddddfe'
+    gap: 15,
   },
   deleteButton: {
     color: colors.Red,
@@ -250,7 +311,7 @@ const styles = StyleSheet.create({
   circleCheckbox: {
     width: 24,
     height: 24,
-    borderRadius: 12, // Circle shape
+    borderRadius: 12,
     borderWidth: 2,
     borderColor: colors.Black,
     justifyContent: 'center',
@@ -262,7 +323,29 @@ const styles = StyleSheet.create({
   circleCheckboxInner: {
     width: 16,
     height: 16,
-    borderRadius: 10, // Inner circle
+    borderRadius: 10,
     backgroundColor: colors.lightBlue,
+  },
+  sectionHeader: {
+    backgroundColor: '#f4f4f4',
+    padding: 10,
+  },
+  sectionHeaderText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  scrollbar: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 30,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  scrollbarText: {
+    fontSize: 12,
+    marginVertical: 2,
   },
 });

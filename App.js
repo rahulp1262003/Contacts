@@ -9,6 +9,7 @@ import AddContact from './screens/AddContact';
 import ContactList from './screens/ContactList';
 import { colors } from './constants/GlobalStyles';
 import EditContact from './screens/EditContact';
+import ContactDetails from './screens/ContactDetails';
 // import LoginScreen from './screens/LoginScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -51,6 +52,7 @@ export default function App() {
         <Stack.Navigator>
           <Stack.Screen name='BottomTabs' component={BottomTabs} options={{ headerShown: false }} />
           <Stack.Screen name='EditContact' component={EditContact} />
+          <Stack.Screen name='ContactDetails' component={ContactDetails} />
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="auto" />

@@ -11,12 +11,10 @@ function EditContact({ route, navigation }) {
   const validationSchema = Yup.object().shape({
     firstName: Yup.string()
       .required('First Name is required')
-      .min(2, 'First Name must be at least 2 characters')
-      .matches(/^[A-Za-z]+$/, 'First Name cannot contain numbers'),
+      .min(2, 'First Name must be at least 2 characters'),
     lastName: Yup.string()
       .required('Last Name is required')
-      .min(2, 'Last Name must be at least 2 characters')
-      .matches(/^[A-Za-z]+$/, 'Last Name cannot contain numbers'),
+      .min(2, 'Last Name must be at least 2 characters'),
     email: Yup.string()
       .email('Enter a valid email')
       .required('Email is required'),
